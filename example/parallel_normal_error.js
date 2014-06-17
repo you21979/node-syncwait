@@ -7,7 +7,8 @@ var test = function(callback){
         function(c){c(new Error('aaa'))},// callback error
         function(c){c(null, 0)}, // success
         function(c){setTimeout(function(){c(null, 1)}, 1000)}, // async success
-        function(c){setTimeout(function(){c(new Error('bbb'))}, 1000)}, // async success
+        function(c){setTimeout(function(){c(null, 2, "hoge")}, 500)}, // async success
+        function(c){setTimeout(function(){c(new Error('bbb'))}, 1000)}, // async callback error
         function(c){c(null, 3)} // success
     ];
     tasks.forEach(function(f){
@@ -16,7 +17,11 @@ var test = function(callback){
     sw.done(function(list){
         console.log('err count:%d', sw.max() - list.length);
         console.log('success count:%d', list.length);
-        callback();
+        if(sw.max() === list.length){
+            callback(null);
+        }else{
+            callback(new Error('failed task exist'));
+        }
     });
 }
 var domain = require('domain');
@@ -30,12 +35,12 @@ var main = function(callback){
         }
     });
     var f = d.bind(test);
-    f(function(){
+    f(function(err){
         // object change timing
         callback(null);
     });
 }
 main(function(err){
-    if(err) console.log('error');
-    else console.log('ok');
+    if(err) console.log('main error');
+    else console.log('main ok');
 });
