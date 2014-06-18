@@ -24,20 +24,10 @@ var test = function(callback){
         }
     });
 }
-var domain = require('domain');
 var main = function(callback){
-    var flag = false;
-    var d = domain.create();
-    d.on('error', function(err){
-        if(!flag){
-            callback(err);
-            flag = true;
-        }
-    });
-    var f = d.bind(test);
-    f(function(err){
+    test(function(err){
         // object change timing
-        callback(null);
+        callback(err);
     });
 }
 main(function(err){

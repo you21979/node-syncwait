@@ -16,26 +16,19 @@ var test = function(callback){
     tasks.forEach(function(f){
         sw.bind(f)(console.log);
     });
+    sw.catch(function(err){
+        callback(err);
+    });
     sw.done(function(list){
         console.log('err count:%d', sw.max() - list.length);
         console.log('success count:%d', list.length);
-        callback();
+        callback(null);
     });
 }
-var domain = require('domain');
 var main = function(callback){
-    var flag = false;
-    var d = domain.create();
-    d.on('error', function(err){
-        if(!flag){
-            callback(err);
-            flag = true;
-        }
-    });
-    var f = d.bind(test);
-    f(function(){
+    test(function(err){
         // object change timing
-        callback(null);
+        callback(err);
     });
 }
 main(function(err){

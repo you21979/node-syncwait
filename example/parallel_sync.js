@@ -17,13 +17,16 @@ var test1 = function(callback){
     read('hoge', 'utf-8');
     read('../README.md');
     sw.fail(console.log);
+    sw.catch(function(err){
+        callback(err);
+    });
     sw.done(function(data){
         if(sw.max() === data.length){
             console.log('test1 all done');
         }else{
             console.log('test1 %s error %s success done', sw.max() - data.length, data.length);
         }
-        callback(contents);
+        callback(null, contents);
     });
 }
 var test2 = function(files, callback){
@@ -33,19 +36,22 @@ var test2 = function(files, callback){
         read(f, 'utf-8');
     });
     sw.fail(console.log);
+    sw.catch(function(err){
+        callback(err);
+    });
     sw.done(function(data){
         if(sw.max() === data.length){
             console.log('test2 all done');
         }else{
             console.log('test2 %s error %s success done', sw.max() - data.length, data.length);
         }
-        callback(data);
+        callback(null, data);
     });
 }
 
-test1(function(contents){
+test1(function(err, contents){
     console.log('test1 end');
 });
-test2(['../lib/syncwait.js', '../README.md'], function(contents){
+test2(['../lib/syncwait.js', '../README.md'], function(err, contents){
     console.log('test2 end');
 });
